@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高中化學閱讀器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-lg">
+        <!-- 頂部標題 -->
+        <header class="bg-blue-600 p-4 text-white text-center sticky top-0 shadow">
+            <h1 class="text-xl font-bold">{{ currentChapter.title }}</h1>
+        </header>
+
+        <!-- 章節內容 -->
+        <main class="p-6">
+            <div v-for="sec in currentChapter.sections" :key="sec.id" class="mb-8 border-b pb-4">
+                <h2 class="text-lg font-bold text-blue-800 mb-2">{{ sec.id }} {{ sec.name }}</h2>
+                <p class="text-gray-700 leading-relaxed">{{ sec.content }}</p>
+            </div>
+        </main>
+
+        <!-- 底部切換按鈕 -->
+        <footer class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t p-2 flex justify-around">
+            <button v-for="ch in chapters" @click="currentChapter = ch" 
+                class="px-3 py-1 rounded text-sm"
+                :class="currentChapter.id === ch.id ? 'bg-blue-500 text-white' : 'bg-gray-200'">
+                第{{ ch.id }}章
+            </button>
+        </footer>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    chapters: [],
+                    currentChapter: {}
+                }
+            },
+            mounted() {
+                fetch('content.json')
+                    .then(r => r.json())
+                    .then(data => {
+                        this.chapters = data.chapters;
+                        this.currentChapter = data.chapters[0];
+                    });
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
